@@ -447,16 +447,34 @@
             }
 
             async function analyzeAI() {
-                const res = await fetch("/analyze", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        data: originalData.slice(0, 50),
-                    }),
-                });
+                if (!originalData || originalData.length === 0) {
+                    return alert("Vui lòng upload file Excel trước!");
+                }
 
-                const result = await res.json();
-                document.getElementById("aiResult").innerText = result.analysis;
+                const aiBox = document.getElementById("aiResult");
+                aiBox.innerText = "⏳ AI đang phân tích dữ liệu, vui lòng đợi...";
+
+                try {
+                    const res = await fetch("/analyze", {
+                        // Đảm bảo đường dẫn này khớp với server
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            data: originalData.slice(0, 50), // Chỉ gửi 50 dòng để tránh quá tải prompt
+                        }),
+                    });
+
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.analysis || "Lỗi server");
+                    }
+
+                    const result = await res.json();
+                    aiBox.innerText = result.analysis;
+                } catch (err) {
+                    console.error(err);
+                    aiBox.innerText = "❌ Lỗi: " + err.message;
+                }
             }
         </script>
     </body>

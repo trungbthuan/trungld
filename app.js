@@ -37,15 +37,15 @@ app.post("/upload", upload.single("file"), (req, res) => {
 
 // ================== AI ==================
 app.post("/analyze", async (req, res) => {
+    console.log("Đã nhận yêu cầu analyze từ Client");
     try {
         const data = req.body.data;
-
         if (!data || !data.length) {
-            return res.json({ analysis: "Không có dữ liệu" });
+            return res.status(400).json({ analysis: "Không có dữ liệu để phân tích" });
         }
 
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-2.5-flash",
         });
 
         const prompt = `
@@ -54,12 +54,22 @@ app.post("/analyze", async (req, res) => {
         `;
 
         const result = await model.generateContent(prompt);
-        const text = result.response.text();
+        const response = await result.response;
+        const text = response.text();
 
         res.json({ analysis: text });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ analysis: "AI lỗi" });
+        console.error("Lỗi Gemini chi tiết:", err);
+        res.status(500).json({ analysis: "AI lỗi: " + err.message });
+    }
+});
+
+app.get("/api/models", async (req, res) => {
+    try {
+        const models = await genAI.listModels();
+        res.json(models);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 

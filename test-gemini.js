@@ -49,6 +49,23 @@ async function testGemini() {
     }
 }
 
+async function listAllModels() {
+    // Đảm bảo GEMINI_API_KEY đã được thiết lập trong biến môi trường
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${process.env.GEMINI_API_KEY}`);
+        const data = await response.json();
+
+        console.log("Các model bạn có quyền truy cập:");
+        data.models.forEach((m) => console.log("- " + m.name));
+    } catch (err) {
+        console.error("Lỗi:", err);
+    }
+}
+
+listAllModels();
+
 //checkAvailableModels();
 
-testGemini();
+//testGemini();
