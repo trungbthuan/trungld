@@ -5,6 +5,9 @@ const XLSX = require("xlsx");
 const path = require("path");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
+// Khởi tạo với API Key từ biến môi trường Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 process.env.GEMINI_API_KEY;
@@ -17,9 +20,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
-
-// Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ================== UPLOAD ==================
 app.post("/upload", upload.single("file"), (req, res) => {
