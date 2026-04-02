@@ -50,7 +50,7 @@ app.post("/analyze", async (req, res) => {
 
         const prompt = `
         Phân tích dữ liệu học sinh:
-        ${JSON.stringify(data).slice(0, 2000)}
+        ${JSON.stringify(data)//.slice(0, 2000)}
         `;
 
         const result = await model.generateContent(prompt);
